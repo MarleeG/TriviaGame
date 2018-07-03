@@ -1,0 +1,43 @@
+body{
+    background-image: url("../images/latest-blue-vintage-background-background-patterns-others.jpg");
+}
+#title{
+    font-family: 'Lobster Two', cursive;
+    font-size: 109px;
+}
+
+#start-button{
+    font-family: 'Lobster Two', cursive;
+    font-size: 70px;
+    padding-left: 30px;
+    padding-right: 30px;
+    position: absolute;
+    top: 100%;
+}
+
+.center-button{
+    text-align: center;
+}
+
+
+.wrap{
+    border-color: blueviolet;
+    border-radius: 30px;
+    border-style: solid;
+    top: 100px;
+}
+#current-time,ol,li,#timer, #questions, .scoreboard{
+    text-align: center;
+    font-size: 35px;
+    font-family: 'Lobster Two', cursive;
+}
+
+li:hover {
+    border-color: orange;
+    border-radius: 30px;
+    border-style: solid;
+    border-width: 1px;
+  }
+
+
+  
