@@ -2,15 +2,32 @@ $(document).ready(function () {
     $(".scoreboard").toggle();
     $("#questions").toggle();
     $("#current-time").toggle();
-    var currentTime = 35;
+    $("#again-button").toggle();
+    var currentTime;
     var gameLength = 0;
     var wins = 0;
     var losses = 0;
+    var unanswered = 0;
     var list = 0;
     var correctAnswer = "";
     var value = "";
     var listClasses = ["option1", "option2", "option3", "option4"];
+    var timer;
+    
+    //Start Button -- Functional
+    function clickingButton() {
+        $("#start-button").on("click", function () {
+            $("#start-button").hide();
 
+            $("#current-time").show();
+
+            clearInterval(timer);
+            currentTime = 35;
+            callTime();
+        });
+    };
+
+    clickingButton();
 
     var questionsAndAnswers = {
         //question1: 'In "The Little Mermaid," who is NOT one of Triton's da ',
@@ -82,16 +99,15 @@ $(document).ready(function () {
     };
 
     function askingQuestion(y) {
-        ask = questionsAndAnswers.questions[y].question;
-        return document.getElementById("questions").innerHTML = ask;
+        var quest = $("#questions");
+        var Q = quest.text(questionsAndAnswers.questions[y].question);
+        return Q;
     }
-
 
     //looping through options array
     //Creating list items dynamically -- depending on length of options
     function looping(x) {
         $("li").remove();
-
         for (list = 0; list < questionsAndAnswers.questions[x].options.length; list++) {
 
             //appending list tag to <ol> in html
@@ -105,12 +121,8 @@ $(document).ready(function () {
                     //global class
                     $("li:nth-child(1)").addClass("option");
 
-
                     //applying the choices in the proper listing in html
                     $("li:nth-child(1)").text(questionsAndAnswers.questions[x].options[list]);
-
-                    //Checking if correct on click
-                    // $("li:nth-child(1)").attr("onclick", correctORNah());
                     break;
 
                 case 1:
@@ -120,18 +132,9 @@ $(document).ready(function () {
                     //global class
                     $("li:nth-child(2)").addClass("option");
 
-                    // //adding a value to what was clicked
-                    // $("li:nth-child(2)").attr("value", questionsAndAnswers.questions[x].options[1]);
-
-                    // //adding onclick function
-                    // $("li:nth-child(2)").attr("onclick", "checking()");
-
                     //applying the choices in the proper listing in html
                     $("li:nth-child(2)").text(questionsAndAnswers.questions[x].options[list]);
                     break;
-
-                //Checking if correct on click
-                // $("li:nth-child(2)").attr("onclick", correctORNah());
 
                 case 2:
                     //adding a class to the ea. individual list item
@@ -140,17 +143,8 @@ $(document).ready(function () {
                     //global class
                     $("li:nth-child(3)").addClass("option");
 
-                    // //adding a value to what was clicked
-                    // $("li:nth-child(3)").attr("value", questionsAndAnswers.questions[x].options[2]);
-
-                    // //adding onclick function
-                    // $("li:nth-child(3)").attr("onclick", "checking()");
-
                     //applying the choices in the proper listing in html
                     $("li:nth-child(3)").text(questionsAndAnswers.questions[x].options[list]);
-
-                    //Checking if correct on click
-                    // $("li:nth-child(3)").attr("onclick", correctORNah());
                     break;
 
                 case 3:
@@ -160,333 +154,121 @@ $(document).ready(function () {
                     //global class
                     $("li:nth-child(4)").addClass("option");
 
-                    // //adding a value to what was clicked
-                    // $("li:nth-child(4)").attr("value", questionsAndAnswers.questions[x].options[3]);
-
-                    // //adding onclick function
-                    // $("li:nth-child(4)").attr("onclick", "checking()");
-
                     //applying the choices in the proper listing in html
                     $("li:nth-child(4)").text(questionsAndAnswers.questions[x].options[list]);
-
-                    //Checking if correct on click
-                    // $("li:nth-child(4)").attr("onclick", correctORNah());
                     break;
                 default:
             }
         }
     }
 
-
-    // WORKING TIMER 
+    // // WORKING TIMER 
     function counter() {
-        $("#timer").text(currentTime);
         correctAnswer = questionsAndAnswers.questions[gameLength].answer;
 
-        currentTime--;
+        askingQuestion(gameLength);
+        looping(gameLength);
 
-        if (currentTime == 0) {
+        $("#timer").show();
+
+        console.log("currentTime: ", currentTime);
+        console.log("gameLength: ", gameLength);
+
+        if (currentTime === -1) {
+            unanswered++;
             losses++;
             gameLength++;
 
-            // clearInterval(timer);
+            clearInterval(timer);
             currentTime = 35;
+            callTime();
 
-
+            if (gameLength === 10) {
+                endGame();
+                clearInterval(timer);
+            }
             alert("correct answer: " + correctAnswer);
-
         }
 
-        $("#questions").show();
-        $("#current-time").show();
-        askingQuestion(gameLength);
-
-        looping(gameLength);
-
         $(".option").on("click", function () {
-            // $("li").on("click", function () {
-            // addEventListener
-            // var myClass = $(this).attr("class");
-            // alert(myClass);
 
-            // value = $(this).attr("value");
             value = ($(this).text());
-            console.log("new value ", value);
 
-            // console.log("whats this", $(this));
-
-            // console.log("option clicked on: ", value)
-
-
-            console.log("correct answer:", correctAnswer)
-            // checkingIfRight();
-            // displayQuestion();
-            console.log("What's this: ", this);
-
-            if (value === correctAnswer && currentTime > 0) {
+            if (value === correctAnswer && currentTime > -1) {
                 wins++;
                 gameLength++;
-                alert("You got it right!");
 
+                clearInterval(timer);
                 currentTime = 35;
-                // clearInterval(timer);
-
+                callTime();
 
                 if (gameLength === 10) {
                     endGame();
+                    clearInterval(timer);
                 }
 
-                // uncomment
-                // callTime();
-
+                alert("You got it right!");
             } else if (value !== correctAnswer) {
                 losses++;
                 gameLength++;
 
+                clearInterval(timer);
                 currentTime = 35;
-                // clearInterval(timer);
-
-
-                //display correct answer
-                alert("correct answer: " + correctAnswer);
-
+                callTime();
 
                 if (gameLength === 10) {
                     endGame();
+                    clearInterval(timer);
                 }
 
-
+                alert("correct answer: " + correctAnswer);
             }
         });
 
-        function endGame() {
-            console.log("game done");
-            $(".scoreboard").show();
-            $("#wins").text(wins);
-            $("#losses").text(losses);
-            $("#current-time").remove();
-            $("#questions").remove();
-            $("li").remove();
-        }
-
+        $("#timer").text(currentTime);
+        $("#questions").show();
+        currentTime--;
     }
+
+    function endGame() {
+        $(".scoreboard").show();
+        $("#wins").text(wins);
+        $("#losses").text(losses);
+        $("#unanswered").text(unanswered);
+        $("#current-time").empty();
+        $("#questions").empty();
+        $("li").remove();
+        $("#again-button").toggle();
+        $("#timer").hide();
+    }
+
+    // TRY AGAIN FUNCTION
+    $("#again-button").on("click", function () {
+
+        // callTime();
+        gameLength = 0;
+        wins = 0;
+        losses = 0;
+        unanswered = 0;
+        list = 0;
+        correctAnswer = "";
+        value = "";
+        
+        $(".scoreboard").toggle();
+        $("#again-button").hide();
+        $("#start-button").show();
+        clickingButton();
+    });
+
 
     function callTime() {
-        setInterval(counter, 1000);
+        timer = setInterval(counter, 1000);
+        return timer;
     }
-    // restarting interval, to clear it or some shit
-    // WORKING TIMER
-
-
-
-
-
-
-
-
-    //Start Button -- Functional
-    function clickingButton() {
-        $("#start-button").on("click", function () {
-            $("button").hide();
-
-            // game();
-            // $("#start-button").hide();
-            // document.getElementById("start-button").hide();
-
-            // currentTime = 30;
-            callTime();
-
-            $("#styleThis").attr("class", ".wrap");
-        });
-    };
-
-    clickingButton();
-
-    //Start Button
-
-    // uncomment below
-    // callTime();
-
-
-
-    // GAME
-    function game() {
-        //Variables
-
-
-
-        var createListElement;
-        var indexQuestionArray;
-
-
-
-        var questionDiv;
-        var quest;
-
-        //asking another questions
-        var ask = "";
-
-        // CHECKING IF RIGHT FUNCTION
-        // function checkingIfRight() {
-
-        //     if (value === correctAnswer) {
-        //         wins++;
-        //         $("#wins").text(wins);
-        //         // alert("You got it right!");
-
-        //         gameLength++;
-
-        //     } else if (value !== correctAnswer) {
-        //         losses++;
-        //         $("#losses").text(losses);
-
-        //         //display correct answer
-        //         alert("correct answer: " + correctAnswer);
-        //         // $("li").remove();
-
-        //     }
-
-        // }
-        //CHECKING IF RIGHT FUNCTION
-
-
-
-
-        // while (gameLength <= 9 && gameLength != 10) {
-        // needs to be a while loop since for-loop is incrementing it without confirming if guess correct ot not
-
-        // while (gameLength <= 9) {
-
-
-
-
-
-        // ------------------------------------ Practice ------------------------------------
-
-
-        // if (currentTime > 0) {
-        //     askingQuestion(gameLength);
-        //     looping(gameLength);
-
-        // } else {
-
-        // }
-
-
-
-        // for (gameLength = 0; gameLength < 10; gameLength++) {
-        //     //Trying to figure out error message in console,
-        //     //TRying to get click event to function for each question
-
-
-        //     askingQuestion(gameLength);
-
-        // }
-
-
-
-        // ------------------------------------ Practice ------------------------------------
-
-        // INITIAL METHOD
-
-
-
-
-
-
-        if (gameLength === 10) {
-        }
-
-        console.log("question i'm asking: ", askingQuestion(gameLength));
-        console.log("options: ", questionsAndAnswers.questions[gameLength].options);
-        console.log("index: ", gameLength);
-
-        //End of game function
-    }
-
-
-
-
-
-
-    //RANDOM QUESTION LOCATION
-
-    //first: ask question
-    // if answer right, win++
-    // if answer wrong, losses++, and display correct answer for a few seconds, then display new question
-
 
     //List question and answer CONSOLE MAIN
-    console.log("Random Question: ", askingQuestion(gameLength));
-    console.log("index of Question: ", gameLength);
-    console.log("Answer of Question: ", questionsAndAnswers.questions[gameLength].answer);
-    console.log("options: ", questionsAndAnswers.questions[gameLength].options);
-    //console.log(questionsAndAnswers.questions[0])
-
-
-    //end of document.ready
+    // console.log("Question: ", askingQuestion(gameLength));
+    // console.log("index of Question: ", gameLength);
+    // console.log("Answer of Question: ", questionsAndAnswers.questions[gameLength].answer);
+    // console.log("options: ", questionsAndAnswers.questions[gameLength].options);
 });
-
-
-
-
-//Example from class
-// var customer = {
-//     firstName: "John",
-//     lastName: "Smith",
-//     age: 25,
-//     address: {
-//         streetAddress: "21 2nd Street",
-//         city: "New York",
-//         state: "NY",
-//         postalCode: "10021"
-//     },
-//     phoneNumber: [{
-//         type: "home",
-//         number: "212 555-1234"
-//     }, {
-//         type: "fax",
-//         number: "646 555-4567"
-//     }]
-// };
-//output: type home
-//console.log(customer.phoneNumber[0].type);
-
-// FOR RANDOM QUESTION
-    // //Allows me to return random objects indices in an object within a variable 
-    // function randomQuestion(arrObject) {
-    //     index = Math.floor(Math.random() * (arrObject.length));
-    //     var random = arrObject[index].question;
-    //     return random;
-    // }
-
-    // //holds random question
-    // var callRandomQuestion = randomQuestion(questionsAndAnswers.questions);
-
-    // //being able to display the random question with the function
-    // function displayQuestion() {
-    //     $("#questions").text(callRandomQuestion);
-    // }
-
-    // displayQuestion();
-    // FOR RANDOM QUESTION
-
-
-    // CLICK FUNCTION
-    // $("li").click(function () {
-        //     // var myClass = $(this).attr("class");
-        //     // alert(myClass);
-
-        //     value = $(this).attr("value");
-        //     console.log("whats this", this);
-
-
-        //     // console.log("option clicked on: ", value)
-        //     correctAnswer = questionsAndAnswers.questions[gameLength].answer;
-        //     // checkingIfRight();
-        //     // displayQuestion();
-        //     console.log("What's this: ", this);
-
-        // });
-
-        // CLICK FUNCTION
